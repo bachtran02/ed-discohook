@@ -1,0 +1,3 @@
+[submodule "edspy"]
+	path = edspy
+	url = https://github.com/bachtran02/edspy.git
