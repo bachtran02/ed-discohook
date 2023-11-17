@@ -10,7 +10,7 @@ load_dotenv()
 
 EMBED_COLOR = 0x2e115b
 BASE_URL = 'https://edstem.org/us'
-ICON_URL = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/icon.jpg'
+ICON_URL = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/icon.png'
 
 class EventHandler:
  
