@@ -10,7 +10,16 @@ load_dotenv()
 
 EMBED_COLOR = 0x2e115b
 BASE_URL = 'https://edstem.org/us'
-ICON_URL = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/icon.png'
+USER_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/user.png'
+ED_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/ed.png'
+
+COURSE_IDS = {
+    42930: os.getenv('CS61A_WEBHOOK'),
+    43134: os.getenv('CS70_WEBHOOK'),
+    44018: os.getenv('DATA8_WEBHOOK'), 
+    22867: os.getenv('OTHERS_WEBHOOK'), 
+    23247: os.getenv('OTHERS_WEBHOOK'), 
+}
 
 class EventHandler:
  
@@ -32,22 +41,20 @@ class EventHandler:
                 'url': BASE_URL + '/courses/{}/discussion'.format(thread.course_id)},
             'footer': {
                 'text': user,
-                'icon_url': ICON_URL,
+                'icon_url': USER_ICON,
             },
             'timestamp': f'{datetime.utcnow().isoformat()[:-3]}Z'
         }]
 
         res = requests.post(
-            url=os.getenv('WEBHOOK_URL'),
-            json={'username': 'Ed', 'embeds': embeds})
+            url=COURSE_IDS[course.id],
+            json={'username': 'Ed', 'avatar_url': ED_ICON,'embeds': embeds})
 
 async def main():
     
-    course_ids = [42930, 43134, 44018, 22867, 23247]
-    
     client = edspy.EdClient()
     client.add_event_hooks(EventHandler())
-    await client.subscribe(course_ids)
+    await client.subscribe(list(COURSE_IDS.keys()))
 
 if __name__ == '__main__':
     asyncio.run(main())
