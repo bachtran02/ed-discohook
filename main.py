@@ -5,6 +5,7 @@ import requests
 from dotenv import load_dotenv
 from datetime import datetime
 from edspy import edspy
+from logger import LOG_CONFIG
 
 load_dotenv()
 
@@ -51,10 +52,11 @@ class EventHandler:
             json={'username': 'Ed', 'avatar_url': ED_ICON,'embeds': embeds})
 
 async def main():
-    
+
     client = edspy.EdClient()
     client.add_event_hooks(EventHandler())
     await client.subscribe(list(COURSE_IDS.keys()))
 
 if __name__ == '__main__':
+    edspy.enable_logger(LOG_CONFIG)
     asyncio.run(main())
