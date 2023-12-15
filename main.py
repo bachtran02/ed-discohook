@@ -5,11 +5,14 @@ import requests
 from dotenv import load_dotenv
 from datetime import datetime
 from edspy import edspy
-from logger import LOG_CONFIG
 
 load_dotenv()
 
-EMBED_COLOR = 0x2e115b
+EMBED_COLOR = {
+    'post':     0x66a2ff,
+    'question': 0xe06ce0
+}
+
 BASE_URL = 'https://edstem.org/us'
 USER_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/user.png'
 ED_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/ed.png'
@@ -36,7 +39,7 @@ class EventHandler:
             'title': '#{} **{}**'.format(thread.number, thread.title),
             'description': thread.document,
             'url': BASE_URL + '/courses/{}/discussion/{}'.format(thread.course_id, thread.id),
-            'color': EMBED_COLOR,
+            'color': EMBED_COLOR[thread.type],
             'author': {
                 'name': '{} • {}'.format(course.code, thread.category),
                 'url': BASE_URL + '/courses/{}/discussion'.format(thread.course_id)},
@@ -58,5 +61,5 @@ async def main():
     await client.subscribe(list(COURSE_IDS.keys()))
 
 if __name__ == '__main__':
-    edspy.enable_logger(LOG_CONFIG)
+    edspy.enable_logger()
     asyncio.run(main())
