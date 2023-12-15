@@ -6,6 +6,4 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ed_discohook
-    volumes:
-      - ./token.pkl:/app/token.pkl
     restart: unless-stopped
