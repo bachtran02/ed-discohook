@@ -9,9 +9,11 @@ from edspy import edspy
 load_dotenv()
 
 EMBED_COLOR = {
-    'post':     0x66a2ff,
-    'question': 0xe06ce0
+    'post':         0x66a2ff,
+    'question':     0xe06ce0,
+    'announcement': 0xfffb55, 
 }
+UKNOWN_EMBED_COLOR = 0x4dffa6
 
 BASE_URL = 'https://edstem.org/us'
 USER_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/user.png'
@@ -39,7 +41,7 @@ class EventHandler:
             'title': '#{} **{}**'.format(thread.number, thread.title),
             'description': thread.document,
             'url': BASE_URL + '/courses/{}/discussion/{}'.format(thread.course_id, thread.id),
-            'color': EMBED_COLOR[thread.type],
+            'color': EMBED_COLOR.get(thread.type, UKNOWN_EMBED_COLOR),
             'author': {
                 'name': '{} • {}'.format(course.code, thread.category),
                 'url': BASE_URL + '/courses/{}/discussion'.format(thread.course_id)},
