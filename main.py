@@ -6,26 +6,11 @@ from dotenv import load_dotenv
 from datetime import datetime
 from edspy import edspy
 
-load_dotenv()
-
-EMBED_COLOR = {
-    'post':         0x66a2ff,
-    'question':     0xe06ce0,
-    'announcement': 0xfffb55, 
-}
-UKNOWN_EMBED_COLOR = 0x4dffa6
+from static import *
 
 BASE_URL = 'https://edstem.org/us'
-USER_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/user.png'
-ED_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/ed.png'
 
-COURSE_IDS = {
-    42930: os.getenv('CS61A_WEBHOOK'),
-    43134: os.getenv('CS70_WEBHOOK'),
-    44018: os.getenv('DATA8_WEBHOOK'), 
-    22867: os.getenv('OTHERS_WEBHOOK'), 
-    23247: os.getenv('OTHERS_WEBHOOK'), 
-}
+course_ids = dict()
 
 class EventHandler:
  
@@ -41,7 +26,7 @@ class EventHandler:
             'title': '#{} **{}**'.format(thread.number, thread.title),
             'description': thread.document,
             'url': BASE_URL + '/courses/{}/discussion/{}'.format(thread.course_id, thread.id),
-            'color': EMBED_COLOR.get(thread.type, UKNOWN_EMBED_COLOR),
+            'color': EMBED_COLORS.get(thread.type, UKNOWN_EMBED_COLOR),
             'author': {
                 'name': '{} • {}'.format(course.code, thread.category),
                 'url': BASE_URL + '/courses/{}/discussion'.format(thread.course_id)},
@@ -53,14 +38,18 @@ class EventHandler:
         }]
 
         res = requests.post(
-            url=COURSE_IDS[course.id],
+            url=course_ids[course.id],
             json={'username': 'Ed', 'avatar_url': ED_ICON,'embeds': embeds})
 
 async def main():
+    load_dotenv()
+
+    for course_id in COURSE_IDS:
+        course_ids[course_id] = os.getenv(COURSE_IDS[course_id])
 
     client = edspy.EdClient()
     client.add_event_hooks(EventHandler())
-    await client.subscribe(list(COURSE_IDS.keys()))
+    await client.subscribe(list(course_ids.keys()))
 
 if __name__ == '__main__':
     edspy.enable_logger()
