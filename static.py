@@ -1,18 +1,23 @@
-# course id : corresponding Discord webhook URLs in .env
-COURSE_IDS = {
-    42930: 'CS61A_WEBHOOK',
-    43134: 'CS70_WEBHOOK',
-    44018: 'DATA8_WEBHOOK',
-    22867: 'OTHERS_WEBHOOK',
-    23247: 'OTHERS_WEBHOOK', 
-}
+from edspy.edspy import ThreadType
 
-EMBED_COLORS = {
-    'post':         0x66a2ff,
-    'question':     0xe06ce0,
-    'announcement': 0xfffb55,    
-}
-UKNOWN_EMBED_COLOR = 0x4dffa6
+BASE_URL = 'https://edstem.org/us'
 
 ED_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/ed.png'
 USER_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/user.png'
+
+POST_COLOR          = 0x66a2ff
+QUESTION_COLOR      = 0xe06ce0
+ANNOUNCEMENT_COLOR  = 0xfffb55
+UKNOWN_COLOR        = 0x4dffa6
+
+EMBED_COLORS = {
+    ThreadType.POST         : POST_COLOR,
+    ThreadType.QUESTION     : QUESTION_COLOR,
+    ThreadType.ANNOUNCEMENT : ANNOUNCEMENT_COLOR,
+}
+
+COURSE_IDS = {
+    51810: 'DATA100_WEBHOOK',
+    22867: 'DATA101_WEBHOOK',
+    23247: 'EECS101_WEBHOOK', 
+}
