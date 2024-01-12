@@ -9,6 +9,13 @@ from edspy import edspy
 
 from static import *
 
+# webhook url that can be loaded from .env with same name (see .env.example)
+COURSE_IDS = {
+    12345: 'CS_XYZ_WEBHOOK',  
+    12346: 'DATA_XYZ_WEBHOOK',    
+    12347: 'INFO_XYZ_WEBHOOK',
+}
+
 class EventHandler:
 
     def __init__(self, client: edspy.EdClient, webhooks: dict) -> None:
