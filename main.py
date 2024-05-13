@@ -1,10 +1,10 @@
 import os
 import asyncio
 import requests
-import logging
+import logging as log
 
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timezone
 from edspy import edspy
 
 from static import *
@@ -21,17 +21,36 @@ class EventHandler:
     def __init__(self, client: edspy.EdClient, webhooks: dict) -> None:
         self.client = client
         self.webhooks = webhooks
+        self.courses = None
+    
+    async def update_courses(self):
+        # update user courses cache every hour
+        while True:
+            self.courses = await self.client.get_courses()
+            await asyncio.sleep(3600)
  
     @edspy.listener(edspy.ThreadNewEvent)
     async def on_new_thread(self, event: edspy.ThreadNewEvent):
 
         thread: edspy.Thread = event.thread
-        course: edspy.Course = await self.client.get_course(thread.course_id)
 
-        user = 'Anonymous User' if thread.is_anonymous else '{} ({})'.format(
-            thread.user['name'], thread.user['course_role'].capitalize())
-        
-        embeds = [{
+        if not self.courses:
+            await self.update_courses()
+        course = next(filter(lambda x: x.id == thread.course_id, self.courses), None)
+
+        # send payload to Discord
+        requests.post(
+            url=self.webhooks.get(course.id),
+            json={
+                'username': 'Ed',
+                'avatar_url': ED_ICON,
+                'embeds': self.build_embed(thread, course)
+            })
+
+    @staticmethod
+    def build_embed(thread: edspy.Thread, course: edspy.Course):
+
+        return [{
             'title': '#{} **{}**'.format(thread.number, thread.title),
             'description': thread.document,
             'url': BASE_URL + '/courses/{}/discussion/{}'.format(thread.course_id, thread.id),
@@ -40,26 +59,27 @@ class EventHandler:
                 'name': '{} • {}'.format(course.code, thread.category),
                 'url': BASE_URL + '/courses/{}/discussion'.format(thread.course_id)},
             'footer': {
-                'text': user,
-                'icon_url': USER_ICON,
+                'text': 'Anonymous User' if thread.is_anonymous else '{} ({})'.format(
+                    thread.user.name, thread.user.course_role.capitalize()),
+                'icon_url': AVATAR_URL + thread.user.avatar if not thread.is_anonymous and
+                    thread.user.avatar else USER_ICON
             },
-            'timestamp': f'{datetime.utcnow().isoformat()[:-3]}Z'
+            'timestamp': f'{datetime.now(timezone.utc).isoformat()[:-9]}Z'
         }]
-
-        res = requests.post(
-            url=self.webhooks.get(course.id),
-            json={'username': 'Ed', 'avatar_url': ED_ICON,'embeds': embeds})
 
 async def main():
     load_dotenv()
 
-    webhook_urls = dict()
-    for course_id in COURSE_IDS:
-        webhook_urls[course_id] = os.getenv(COURSE_IDS[course_id])
+    webhook_urls = {course_id: os.getenv(webhook) for 
+        course_id, webhook in COURSE_IDS.items()}
 
     client = edspy.EdClient()
-    client.add_event_hooks(EventHandler(client=client, webhooks=webhook_urls))
-    await client.subscribe(list(webhook_urls.keys()))
+    handler = EventHandler(client=client, webhooks=webhook_urls)
+    client.add_event_hooks(handler)
+    
+    await asyncio.gather(
+        handler.update_courses(),
+        client.subscribe(list(webhook_urls.keys())))
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

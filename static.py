@@ -1,6 +1,7 @@
 from edspy.edspy import ThreadType
 
 BASE_URL = 'https://edstem.org/us'
+AVATAR_URL = 'https://static.us.edusercontent.com/avatars/'
 
 ED_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/ed.png'
 USER_ICON = 'https://raw.githubusercontent.com/bachtran02/ed-discohook/main/assets/user.png'
