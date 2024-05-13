@@ -82,5 +82,5 @@ async def main():
         client.subscribe(list(webhook_urls.keys())))
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    log.basicConfig(level=log.INFO)
     asyncio.run(main())
