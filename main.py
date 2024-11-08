@@ -34,6 +34,9 @@ class EventHandler:
 
         thread: edspy.Thread = event.thread
 
+        if thread.is_private == True:
+            return
+        
         if not self.courses:
             await self.update_courses()
         course = next(filter(lambda x: x.id == thread.course_id, self.courses), None)
