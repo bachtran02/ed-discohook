@@ -1,4 +1,4 @@
-from edspy.edspy import ThreadType
+from edpy.edpy import ThreadType
 
 BASE_URL = 'https://edstem.org/us'
 AVATAR_URL = 'https://static.us.edusercontent.com/avatars/'
