@@ -5,7 +5,7 @@ import logging as log
 
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-from edspy import edspy
+from edpy import edpy
 
 from static import *
 
@@ -18,7 +18,7 @@ COURSE_IDS = {
 
 class EventHandler:
 
-    def __init__(self, client: edspy.EdClient, webhooks: dict) -> None:
+    def __init__(self, client: edpy.EdClient, webhooks: dict) -> None:
         self.client = client
         self.webhooks = webhooks
         self.courses = None
@@ -29,11 +29,14 @@ class EventHandler:
             self.courses = await self.client.get_courses()
             await asyncio.sleep(3600)
  
-    @edspy.listener(edspy.ThreadNewEvent)
-    async def on_new_thread(self, event: edspy.ThreadNewEvent):
+    @edpy.listener(edpy.ThreadNewEvent)
+    async def on_new_thread(self, event: edpy.ThreadNewEvent):
 
-        thread: edspy.Thread = event.thread
+        thread: edpy.Thread = event.thread
 
+        if thread.is_private == True:
+            return
+        
         if not self.courses:
             await self.update_courses()
         course = next(filter(lambda x: x.id == thread.course_id, self.courses), None)
@@ -48,7 +51,7 @@ class EventHandler:
             })
 
     @staticmethod
-    def build_embed(thread: edspy.Thread, course: edspy.Course):
+    def build_embed(thread: edpy.Thread, course: edpy.Course):
 
         return [{
             'title': '#{} **{}**'.format(thread.number, thread.title),
@@ -73,7 +76,7 @@ async def main():
     webhook_urls = {course_id: os.getenv(webhook) for 
         course_id, webhook in COURSE_IDS.items()}
 
-    client = edspy.EdClient()
+    client = edpy.EdClient()
     handler = EventHandler(client=client, webhooks=webhook_urls)
     client.add_event_hooks(handler)
     

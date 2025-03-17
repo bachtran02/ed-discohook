@@ -1,7 +1,7 @@
 # ed-discohook
 
 A Python program that listens to [edstem](https://edstem.org/) websockets for new threads and publish events to [Discord](https://discord.com/) via [webhooks](https://discord.com/developers/docs/resources/webhook).
-This project mainly makes use of [edspy](https://github.com/bachtran02/edspy), a Python wrapper for edstem API which I also maintain. 
+This project mainly makes use of [edpy](https://github.com/bachtran02/edpy), a Python wrapper for edstem API which I also maintain. 
 
 ## Demo 
 <img alt="ed-discohook demo" src="https://github.com/bachtran02/ed-discohook/assets/83796054/8f4c53b1-4a36-4ce2-b39b-1ebdd32a248d" width="550">
